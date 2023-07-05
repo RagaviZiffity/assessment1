@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('.box').click(function(){
+                $(this).animate({
+                    left: '250px',
+                    opacity: 0.5,
+                    height: '200px',
+                    width: '200px',
+                },function(){
+                    $(this).click(function(){
+                        $(this).hide();
+                    })
+                })
+            })
+            
+        })
+
+    </script>
+    <style rel="stylesheet">
+        .box{
+            width: 100px;
+            height: 100px;
+            background-color: aqua;
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+    <div><div class="box"></div></div>
+    <div class="sec"></div>
+</body>
+</html>
