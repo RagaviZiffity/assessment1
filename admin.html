@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Employee Portal</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.1/css/jquery.dataTables.css">
+  <script src="https://cdn.datatables.net/1.11.1/js/jquery.dataTables.js"></script>
+</head>
+<style>
+    /* Employee Login/Signup Page */
+#employee-login {
+  background-color: #f2f2f2;
+  padding: 20px;
+}
+
+#employee-login h2 {
+  color: #333;
+}
+
+#employee-login input[type="text"],
+#employee-login input[type="password"],
+#employee-login input[type="date"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+}
+
+#employee-login button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+/* Admin Login Page */
+#admin-login {
+  background-color: #f2f2f2;
+  padding: 20px;
+}
+
+#admin-login h2 {
+  color: #333;
+}
+
+#admin-login input[type="text"],
+#admin-login input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+}
+
+#admin-login button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+/* Admin Home Page */
+#admin-home {
+  background-color: #f2f2f2;
+  padding: 20px;
+}
+
+#admin-home h2 {
+  color: #333;
+}
+
+#admin-home table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#admin-home th,
+#admin-home td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+#admin-home th {
+  background-color: #4CAF50;
+  color: white;
+}
+
+#admin-home tr:hover {
+  background-color: #f5f5f5;
+}
+
+/* Employee View Page */
+#employee-view {
+  background-color: #f2f2f2;
+  padding: 20px;
+}
+
+#employee-view h2 {
+  color: #333;
+}
+
+#employee-view table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#employee-view th,
+#employee-view td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+#employee-view th {
+  background-color: #4CAF50;
+  color: white;
+}
+
+#employee-view tr:hover {
+  background-color: #f5f5f5;
+}
+
+#employee-view button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+/* General Styling */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+</style>
+<body>
+  <!-- Employee View Page -->
+  <div id="employee-view" style="display: none;">
+    <h2>Employee View Page</h2>
+    <form id="employee-form">
+      <input type="text" id="firstname" placeholder="First Name" required><br>
+      <input type="text" id="lastname" placeholder="Last Name" required><br>
+      <input type="email" id="email" placeholder="Email ID" required><br>
+      <input type="tel" id="phone" placeholder="Phone Number" required><br>
+      <input type="date" id="joining-date" placeholder="Joining Date" required><br>
+      <input type="file" id="image" accept="image/*" required><br>
+      <input type="text" id="city" placeholder="City" required><br>
+      <input type="text" id="state" placeholder="State" required><br>
+      <input type="submit" value="Submit">
+    </form>
+    <button id="logout-btn">Logout</button>
+  </div>
+
+  <!-- Employee Login/Signup Page -->
+  <div id="employee-login" style="display: none;">
+    <h2>Employee Login/Signup Page</h2>
+    <div id="login-form">
+      <input type="text" id="username" placeholder="Username" required><br>
+      <input type="password" id="password" placeholder="Password" required><br>
+      <button id="login-btn">Login</button>
+      <button id="signup-btn">Create Account</button>
+    </div>
+    <div id="signup-form" style="display: none;">
+      <input type="text" id="new-username" placeholder="Username" required><br>
+      <input type="password" id="new-password" placeholder="Password" required><br>
+      <button id="create-account-btn">Create Account</button>
+    </div>
+    <button id="admin-login-btn">Admin Login</button>
+  </div>
+
+  <!-- Admin Login Page -->
+  <div id="admin-login" style="display: none;">
+    <h2>Admin Login</h2>
+    <input type="text" id="admin-username" placeholder="Username" required><br>
+    <input type="password" id="admin-password" placeholder="Password" required><br>
+    <button id="admin-login-btn">Login</button>
+  </div>
+
+  <!-- Admin Home Page -->
+  <div id="admin-home" style="display: none;">
+    <h2>Welcome, Admin</h2>
+    <table id="employee-table">
+      <thead>
+        <tr>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Email ID</th>
+          <th>Phone Number</th>
+          <th>Joining Date</th>
+          <th>Image</th>
+          <th>City</th>
+          <th>State</th>
+        </tr>
+      </thead>
+      <tbody id="employee-data">
+      </tbody>
+    </table>
+    <button id="logout-btn">Logout</button>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      // Check if the user is already logged in
+      var loggedInUser = localStorage.getItem('loggedInUser');
+      if (loggedInUser) {
+        showEmployeeView();
+      } else {
+        showEmployeeLogin();
+      }
+
+      // Show Employee View Page
+      function showEmployeeView() {
+        $('#employee-login').hide();
+        $('#admin-login').hide();
+        $('#admin-home').hide();
+        $('#employee-view').show();
+      }
+
+      // Show Employee Login/Signup Page
+      function showEmployeeLogin() {
+        $('#employee-view').hide();
+        $('#admin-login').hide();
+        $('#admin-home').hide();
+        $('#employee-login').show();
+      }
+
+      // Show Admin Login Page
+      function showAdminLogin() {
+        $('#employee-login').hide();
+        $('#admin-home').hide();
+        $('#admin-login').show();
+      }
+
+      // Show Admin Home Page
+      function showAdminHome() {
+        $('#employee-login').hide();
+        $('#admin-login').hide();
+        $('#admin-home').show();
+      }
+
+      // Employee Form Submission
+      $('#employee-form').submit(function(e) {
+        e.preventDefault();
+
+        // Get the form values
+        var firstname = $('#firstname').val();
+        var lastname = $('#lastname').val();
+        var email = $('#email').val();
+        var phone = $('#phone').val();
+        var joiningDate = $('#joining-date').val();
+        var image = $('#image').val();
+        var city = $('#city').val();
+        var state = $('#state').val();
+
+        // Check if all required fields are filled
+        if (firstname && lastname && email && phone && joiningDate && image && city && state) {
+          var employee = {
+            firstname: firstname,
+            lastname: lastname,
+            email: email,
+            phone: phone,
+            joiningDate: joiningDate,
+            image: image,
+            city: city,
+            state: state
+          };
+
+          // Save employee data to local storage
+          var employees = JSON.parse(localStorage.getItem('employees')) || [];
+          var existingEmployee = employees.find(function(emp) {
+            return emp.email === email;
+          });
+
+          if (existingEmployee) {
+            alert('You have already submitted the form.');
+          } else {
+            employees.push(employee);
+            localStorage.setItem('employees', JSON.stringify(employees));
+
+            // Clear the form
+            $('#employee-form')[0].reset();
+            alert('Employee details saved successfully!');
+          }
+        } else {
+          alert('Please fill all required fields.');
+        }
+      });
+
+      // Employee Login
+      $('#login-btn').click(function() {
+        var username = $('#username').val();
+        var password = $('#password').val();
+
+        // Check if the username and password match the saved data
+        var employees = JSON.parse(localStorage.getItem('employees')) || [];
+        var loggedInEmployee = employees.find(function(employee) {
+          return employee.username === username && employee.password === password;
+        });
+
+        if (loggedInEmployee) {
+          // Save the logged-in user to local storage
+          localStorage.setItem('loggedInUser', JSON.stringify(loggedInEmployee));
+          showEmployeeView();
+        } else {
+          alert('Invalid username or password. Please try again.');
+        }
+      });
+
+      // Create Account
+      $('#signup-btn').click(function() {
+        $('#login-form').hide();
+        $('#signup-form').show();
+      });
+
+      // Employee Signup
+      $('#create-account-btn').click(function() {
+        var username = $('#new-username').val();
+        var password = $('#new-password').val();
+
+        // Check if the username already exists
+        var employees = JSON.parse(localStorage.getItem('employees')) || [];
+        var existingEmployee = employees.find(function(employee) {
+          return employee.username === username;
+        });
+
+        if (existingEmployee) {
+          alert('Username already exists. Please choose a different username.');
+        } else {
+          // Create a new employee account
+          var newEmployee = {
+            username: username,
+            password: password
+          };
+
+          employees.push(newEmployee);
+          localStorage.setItem('employees', JSON.stringify(employees));
+          alert('Account created successfully! Please login to continue.');
+          $('#signup-form').hide();
+          $('#login-form').show();
+        }
+      });
+
+      // Admin Login
+      $('#admin-login-btn').click(function() {
+        showAdminLogin();
+      });
+
+      // Admin Login Validation
+      $('#admin-login #admin-login-btn').click(function() {
+        var adminUsername = $('#admin-username').val();
+        var adminPassword = $('#admin-password').val();
+
+        if (adminUsername === 'admin' && adminPassword === 'admin@123') {
+          showAdminHome();
+          displayEmployeeData();
+        } else {
+          alert('Invalid admin credentials. Please try again.');
+        }
+      });
+
+      // Display Employee Data in Admin Home Page
+      function displayEmployeeData() {
+        var employees = JSON.parse(localStorage.getItem('')) || [];
+        var tableData = '';
+
+        for (var i = 0; i < employees.length; i++) {
+          var employee = employees[i];
+          if (employee.firstname && employee.lastname && employee.email && employee.phone && employee.joiningDate && employee.image && employee.city && employee.state) {
+            tableData += '<tr>';
+            tableData += '<td>' + employee.firstname + '</td>';
+            tableData += '<td>' + employee.lastname + '</td>';
+            tableData += '<td>' + employee.email + '</td>';
+            tableData += '<td>' + employee.phone + '</td>';
+            tableData += '<td>' + employee.joiningDate + '</td>';
+            tableData += '<td>' + employee.image + '</td>';
+            tableData += '<td>' + employee.city + '</td>';
+            tableData += '<td>' + employee.state + '</td>';
+            tableData += '</tr>';
+          }
+        }
+
+        $('#employee-data').html(tableData);
+        $('#employee-table').DataTable({
+          pagingType: 'full_numbers',
+          pageLength: 3
+          
+        });
+      }
+
+      // Logout Button - Employee View Page
+      $('#employee-view #logout-btn').click(function() {
+        localStorage.removeItem('loggedInUser');
+        showEmployeeLogin();
+      });
+
+      // Logout Button - Admin Home Page
+      $('#admin-home #logout-btn').click(function() {
+        localStorage.removeItem('loggedInUser');
+        showAdminLogin();
+      });
+    });
+  </script>
+</body>
+</html>

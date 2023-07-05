@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Signup Form</title>
+  <style>
+    .form-container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .form-container h2 {
+      text-align: center;
+    }
+
+    .form-container input[type="text"],
+    .form-container input[type="date"],
+    .form-container input[type="file"]{
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      box-sizing: border-box;
+    }
+
+    .form-container select {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      box-sizing: border-box;
+    }
+
+    .form-container input[type="submit"] {
+      width: 100%;
+      background-color: #4CAF50;
+      color: white;
+      padding: 14px 20px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .form-container input[type="submit"]:hover {
+      background-color: #45a049;
+    }
+
+    .form-container span {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Signup Form</h2>
+    <form id="signup-form" enctype="multipart/form-data">
+      <label for="firstname">First Name:</label>
+      <input type="text" id="firstname" name="firstname" required>
+
+      <label for="lastname">Last Name:</label>
+      <input type="text" id="lastname" name="lastname" required>
+
+      <label for="joiningdate">Joining Date:</label>
+      <input type="date" id="joiningdate" name="joiningdate" required>
+
+      <label for="image">Image:</label>
+      <input type="file" id="image" name="image" accept="image/*" required>
+
+      <label for="city">City:</label>
+      <input type="text" id="city" name="city" required>
+
+      <label for="state">State:</label>
+      <input type="text" id="state" name="state" required>
+
+      <input type="submit" value="Signup">
+    </form>
+
+    <h3>Already have an account?</h3>
+    <form id="login-form">
+      <label for="loginemail">Email:</label>
+      <input type="text" id="loginemail" name="loginemail" required>
+
+      <label for="loginpassword">Password:</label>
+      <input type="password" id="loginpassword" name="loginpassword" required>
+
+      <input type="submit" value="Login">
+    </form>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    // Signup form submission
+    $('#signup-form').submit(function(e) {
+      e.preventDefault(); // Prevent form submission
+
+      // Get form values
+      var firstName = $('#firstname').val();
+      var lastName = $('#lastname').val();
+      var joiningDate = $('#joiningdate').val();
+      var city = $('#city').val();
+      var state = $('#state').val();
+
+      // Save data to local storage
+      var userData = {
+        firstName: firstName,
+        lastName: lastName,
+        joiningDate: joiningDate,
+        city: city,
+        state: state
+      };
+      localStorage.setItem('userData', JSON.stringify(userData));
+
+      // Clear form inputs
+      $('#firstname').val('');
+      $('#lastname').val('');
+      $('#joiningdate').val('');
+      $('#city').val('');
+      $('#state').val('');
+
+      // Display success message or perform any desired action
+      alert('Signup successful!');
+    });
+
+    // Login form submission
+    $('#login-form').submit(function(e) {
+      e.preventDefault(); // Prevent form submission
+
+      // Get form values
+      var loginEmail = $('#loginemail').val();
+      var loginPassword = $('#loginpassword').val();
+
+      // Retrieve stored user data from local storage
+      var storedUserData = localStorage.getItem('userData');
+      if (storedUserData) {
+        storedUserData = JSON.parse(storedUserData);
+
+        // Perform login validation
+        // Example: Check if the loginEmail and loginPassword match the stored data
+        if (loginEmail === storedUserData.email && loginPassword === storedUserData.password) {
+          // Successful login, perform desired action (e.g., redirect to a dashboard page)
+          alert('Login successful!');
+        } else {
+          alert('Invalid email or password');
+        }
+      } else {
+        alert('No account found. Please sign up first.');
+      }
+
+      // Clear login form inputs
+      $('#loginemail').val('');
+      $('#loginpassword').val('');
+    });
+  </script>
+</body>
+</html>
